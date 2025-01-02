@@ -1,0 +1,40 @@
+[project]
+name = "sdcp"
+version = "0.0.1"
+authors = [
+  { name="Jonny Stirling", email="sdcp@jonstirling.co.uk" },
+]
+description = "A package implementing the Smart Device Control Protocol (SDCP)"
+readme = "README.md"
+requires-python = ">=3.12"
+classifiers = [
+    "Programming Language :: Python :: 3",
+    "License :: OSI Approved :: MIT License",
+    "Operating System :: OS Independent",
+]
+
+[project.urls]
+Homepage = "https://github.com/jonnixs/sdcp"
+Issues = "https://github.com/jonnixs/sdcp/issues"
+
+[build-system]
+requires = ["hatchling", "websockets"]
+build-backend = "hatchling.build"
+
+[project.optional-dependencies]
+dev = [
+    "pyright",
+    "black",
+    "isort",
+    "ruff"
+]
+test = ["pytest", "pytest-asyncio", "mypy"]
+
+[tool.pyright]
+include = ["src"]
+
+[tool.pytest.ini_options]
+pythonpath = "src"
+
+[tool.ruff]
+src = ["src", "tests"]
