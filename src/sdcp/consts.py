@@ -47,6 +47,7 @@ SDCP_STORAGE_ITEM_TYPE = ["Folder", "File"]
 
 SDCP_TASK_STATUS = ["Other", "Completed", "Exception", "Stopped"]
 
+SDCP_TIME_LAPSE_STATUS = [False, True]
 SDCP_TIME_LAPSE_VIDEO = [
     "Not shot",
     "File exists",

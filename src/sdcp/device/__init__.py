@@ -3,11 +3,21 @@
 from __future__ import annotations
 
 from collections.abc import Callable
-from datetime import datetime
+from dataclasses import dataclass
 import ipaddress
 from typing import Any, Self
 
-from websockets.asyncio.client import ClientConnection, connect
+
+@dataclass
+class PrintInfo:
+    status: tuple[int, str] | None = None
+    current_layer: int | None = None
+    total_layers: int | None = None
+    current_ticks: int | None = None
+    total_ticks: int | None = None
+    file_name: str | None = None
+    error: tuple[int, str] | None = None
+    task_id: str | None = None
 
 
 class Device:
@@ -33,11 +43,11 @@ class Device:
         firmware: str,
     ):
         """Docs here."""
-        self._conn: ClientConnection
         self._port = 3030
         self._path = "/websocket"
         self._requests: dict[str, tuple[Callable, int]] = {}
 
+        # Discovery
         self.id = id
         self.name = name
         self.make = make
@@ -47,38 +57,29 @@ class Device:
         self.protocol = protocol
         self.firmware = firmware
 
+        # Device Status
+        self.current_status: tuple[int, str] | None = None
+        self.previous_status: tuple[int, str] | None = None
+        self.print_screen: int | None = None
+        self.release_film: int | None = None
+        self.temp_of_uv_led: int | None = None
+        self.time_lapse_status: bool | None = None
+        self.temp_of_box: int | None = None
+        self.target_temp_of_box: int | None = None
+        self.print_info = PrintInfo()
+
     def __repr__(self):
         module = type(self).__module__
         qualname = type(self).__qualname__
         return f"<{module}.{qualname} object at {hex(id(self))} with ID '{self.id}' and IP '{self.addr}'>"
 
-    async def connect(self) -> None:
-        """Docs here."""
-        self._conn = await connect(f"{self.addr}:{self._port}{self._path}")
+    @property
+    def port(self):
+        return self._port
 
-    async def send(
-        self, data: str, /, callback: tuple[str, Callable] | None = None
-    ) -> bool:
-        """Docs here."""
-        try:
-            await self._conn.send(data)
-
-            # Send successful
-            if callback:
-                self._requests[callback[0]] = (
-                    callback[1],
-                    int(datetime.now().timestamp()),
-                )
-        except Exception:
-            return False
-
-        return True
-
-    async def recv(self) -> Any:  # Topic:
-        """Docs here."""
-        message = await self._conn.recv()
-
-        return message
+    @property
+    def path(self):
+        return self._path
 
 
 def _parse_v3(data: dict) -> dict[str, str]:
